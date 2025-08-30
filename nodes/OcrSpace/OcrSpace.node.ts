@@ -47,6 +47,10 @@ export class OcrSpace implements INodeType {
 						value: 'ara',
 					},
 					{
+						name: 'Auto-Detect (Engine 2 Only)',
+						value: 'auto',
+					},
+					{
 						name: 'Bulgarian',
 						value: 'bul',
 					},
@@ -189,6 +193,13 @@ export class OcrSpace implements INodeType {
 						default: false,
 						description: 'Whether to scale the image for better OCR accuracy',
 					},
+					{
+						displayName: 'Table Mode',
+						name: 'isTable',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to optimize OCR for tables, receipts, and structured documents with line-by-line text parsing',
+					},
 				],
 			},
 		],
@@ -207,6 +218,7 @@ export class OcrSpace implements INodeType {
 					detectOrientation?: boolean;
 					isOverlayRequired?: boolean;
 					scale?: boolean;
+					isTable?: boolean;
 				};
 
 				const binaryData = items[i].binary?.[binaryPropertyName] as IBinaryData;
@@ -242,6 +254,9 @@ export class OcrSpace implements INodeType {
 				}
 				if (additionalOptions.scale) {
 					formData.scale = 'true';
+				}
+				if (additionalOptions.isTable) {
+					formData.isTable = 'true';
 				}
 
 				// Make API request

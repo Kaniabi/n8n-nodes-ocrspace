@@ -4,7 +4,8 @@
       "WebFetch(domain:ocr.space)",
       "Bash(npm run build:*)",
       "Bash(npm install)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(git remote set-url:*)"
     ],
     "deny": [],
     "ask": []
