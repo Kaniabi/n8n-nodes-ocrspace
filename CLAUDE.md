@@ -9,17 +9,17 @@ This is an n8n community node package for creating custom integrations. The proj
 ## Development Commands
 
 ### Build and Development
-- `npm run build` - Full build: clean dist, compile TypeScript, copy icons
-- `npm run dev` - Watch mode for TypeScript compilation
+- `bun run build` - Full build: clean dist, compile TypeScript, copy icons
+- `bun run dev` - Watch mode for TypeScript compilation
 - `tsc` - Direct TypeScript compilation
 
 ### Code Quality
-- `npm run lint` - Run ESLint on nodes, credentials, and package.json
-- `npm run lintfix` - Auto-fix ESLint issues
-- `npm run format` - Format code with Prettier
+- `bun run lint` - Run ESLint on nodes, credentials, and package.json
+- `bun run lintfix` - Auto-fix ESLint issues
+- `bun run format` - Format code with Prettier
 
 ### Publishing
-- `npm run prepublishOnly` - Pre-publish checks (build + lint with stricter rules)
+- `bun run prepublishOnly` - Pre-publish checks (build + lint with stricter rules)
 
 ## Architecture
 
