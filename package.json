@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ocrspace",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "n8n node for OCR.space API - extract text from images using OCR",
   "keywords": [
     "n8n-community-node-package"
@@ -8,8 +8,8 @@
   "license": "MIT",
   "homepage": "",
   "author": {
-    "name": "Community Developer",
-    "email": "developer@example.com"
+    "name": "Alexandre Andrade",
+    "email": "kaniabi@gmail.com"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+    "prepublishOnly": "bun run build && bun run lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
     "dist"

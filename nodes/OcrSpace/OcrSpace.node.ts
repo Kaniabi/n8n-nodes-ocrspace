@@ -5,7 +5,7 @@ import type {
 	INodeTypeDescription,
 	IBinaryData,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionType, NodeOperationError, LoggerProxy } from 'n8n-workflow';
 
 export class OcrSpace implements INodeType {
 	description: INodeTypeDescription = {
@@ -43,12 +43,12 @@ export class OcrSpace implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Arabic',
-						value: 'ara',
+						name: 'Auto-detect (Engine 2 only)',
+						value: 'auto',
 					},
 					{
-						name: 'Auto-Detect (Engine 2 Only)',
-						value: 'auto',
+						name: 'Arabic',
+						value: 'ara',
 					},
 					{
 						name: 'Bulgarian',
@@ -143,7 +143,7 @@ export class OcrSpace implements INodeType {
 						value: 'tur',
 					},
 				],
-				default: 'eng',
+				default: 'auto',
 				description: 'Language to use for OCR',
 			},
 			{
@@ -162,7 +162,7 @@ export class OcrSpace implements INodeType {
 						description: 'Alternative OCR engine (better for certain image types)',
 					},
 				],
-				default: '1',
+				default: '2',
 				description: 'OCR engine to use for text extraction',
 			},
 			{
@@ -209,6 +209,9 @@ export class OcrSpace implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
+		console.log('OcrSpace.execute');
+		LoggerProxy.info('OcrSpace.execute');
+
 		for (let i = 0; i < items.length; i++) {
 			try {
 				const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
@@ -221,31 +224,24 @@ export class OcrSpace implements INodeType {
 					isTable?: boolean;
 				};
 
-				const binaryData = items[i].binary?.[binaryPropertyName] as IBinaryData;
+				const binaryData = items[i].binary?.[binaryPropertyName];
 				if (!binaryData) {
 					throw new NodeOperationError(
 						this.getNode(),
-						`No binary data found in property "${binaryPropertyName}"`,
-						{ itemIndex: i },
+						`No binary data found in property: ${binaryPropertyName}`,
+						{ itemIndex: i }
 					);
 				}
+				const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+				const fileName: string = binaryData.fileName || `document_${i}.${binaryData.fileExtension || 'jpg'}`;
 
-				// Get binary data buffer
-				const binaryBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-				
-				// Prepare form data
 				const formData: { [key: string]: any } = {
-					file: {
-						value: binaryBuffer,
-						options: {
-							filename: binaryData.fileName || 'image',
-							contentType: binaryData.mimeType,
-						},
-					},
-					language,
+					file: { [fileName]: buffer },
+					filetype: binaryData.fileExtension,
+					language: language,
 					OCREngine: ocrEngine,
 				};
-				
+
 				if (additionalOptions.detectOrientation) {
 					formData.detectOrientation = 'true';
 				}
@@ -259,7 +255,9 @@ export class OcrSpace implements INodeType {
 					formData.isTable = 'true';
 				}
 
-				// Make API request
+				console.log(formData);
+				LoggerProxy.info('FormData:', formData);
+
 				const response = await this.helpers.httpRequestWithAuthentication.call(
 					this,
 					'ocrSpaceApi',

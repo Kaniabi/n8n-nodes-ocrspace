@@ -2,9 +2,9 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:ocr.space)",
-      "Bash(npm run build:*)",
-      "Bash(npm install)",
-      "Bash(npm run lint)",
+      "Bash(bun run build:*)",
+      "Bash(bun install)",
+      "Bash(bun run lint)",
       "Bash(git remote set-url:*)"
     ],
     "deny": [],
