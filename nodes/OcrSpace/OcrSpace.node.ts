@@ -6,6 +6,7 @@ import type {
 	IBinaryData,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError, LoggerProxy } from 'n8n-workflow';
+import FormData from 'form-data';
 
 export class OcrSpace implements INodeType {
 	description: INodeTypeDescription = {
@@ -209,7 +210,6 @@ export class OcrSpace implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
-		console.log('OcrSpace.execute');
 		LoggerProxy.info('OcrSpace.execute');
 
 		for (let i = 0; i < items.length; i++) {
@@ -224,7 +224,7 @@ export class OcrSpace implements INodeType {
 					isTable?: boolean;
 				};
 
-				const binaryData = items[i].binary?.[binaryPropertyName];
+				const binaryData: IBinaryData | undefined = items[i].binary?.[binaryPropertyName];
 				if (!binaryData) {
 					throw new NodeOperationError(
 						this.getNode(),
@@ -235,28 +235,26 @@ export class OcrSpace implements INodeType {
 				const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 				const fileName: string = binaryData.fileName || `document_${i}.${binaryData.fileExtension || 'jpg'}`;
 
-				const formData: { [key: string]: any } = {
-					file: { [fileName]: buffer },
-					filetype: binaryData.fileExtension,
-					language: language,
-					OCREngine: ocrEngine,
-				};
+				const formData = new FormData();
+				formData.append('file', buffer, fileName);
+				formData.append('filetype', binaryData.fileExtension || '');
+				formData.append('language', language);
+				formData.append('OCREngine', ocrEngine);
 
 				if (additionalOptions.detectOrientation) {
-					formData.detectOrientation = 'true';
+					formData.append('detectOrientation', 'true');
 				}
 				if (additionalOptions.isOverlayRequired) {
-					formData.isOverlayRequired = 'true';
+					formData.append('isOverlayRequired', 'true');
 				}
 				if (additionalOptions.scale) {
-					formData.scale = 'true';
+					formData.append('scale', 'true');
 				}
 				if (additionalOptions.isTable) {
-					formData.isTable = 'true';
+					formData.append('isTable', 'true');
 				}
 
-				console.log(formData);
-				LoggerProxy.info('FormData:', formData);
+				LoggerProxy.info(`Uploading file for OCR: ${fileName}`);
 
 				const response = await this.helpers.httpRequestWithAuthentication.call(
 					this,
@@ -265,7 +263,7 @@ export class OcrSpace implements INodeType {
 						method: 'POST',
 						url: 'https://api.ocr.space/parse/image',
 						body: formData,
-					} as any,
+					},
 				);
 
 				// Check for API errors

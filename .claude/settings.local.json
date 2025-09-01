@@ -5,7 +5,11 @@
       "Bash(bun run build:*)",
       "Bash(bun install)",
       "Bash(bun run lint)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.n8n.io)",
+      "WebFetch(domain:community.n8n.io)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []
