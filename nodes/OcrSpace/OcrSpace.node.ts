@@ -5,7 +5,7 @@ import type {
 	INodeTypeDescription,
 	IBinaryData,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError, LoggerProxy } from 'n8n-workflow';
+import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import FormData from 'form-data';
 
 export class OcrSpace implements INodeType {
@@ -210,7 +210,7 @@ export class OcrSpace implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
-		LoggerProxy.info('OcrSpace.execute');
+		this.logger.info('OcrSpace.execute');
 
 		for (let i = 0; i < items.length; i++) {
 			try {
@@ -254,7 +254,7 @@ export class OcrSpace implements INodeType {
 					formData.append('isTable', 'true');
 				}
 
-				LoggerProxy.info(`Uploading file for OCR: ${fileName}`);
+				this.logger.info(`Uploading file for OCR: ${fileName}`);
 
 				const response = await this.helpers.httpRequestWithAuthentication.call(
 					this,
